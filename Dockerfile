@@ -3,6 +3,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_PYTHON_DOWNLOADS=never \
+    HF_ENDPOINT=https://hf-mirror.com \
     EDKG_DL_ASSET_DIR=/app/models
 
 WORKDIR /app
@@ -14,14 +15,17 @@ RUN sed -i 's|deb.debian.org|mirrors.cernet.edu.cn|g; s|security.debian.org|mirr
 
 COPY pyproject.toml uv.lock README.md ./
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-dev --extra api --no-install-project
+    uv sync --locked --no-dev --extra api --extra cpu --no-install-project
 
-RUN .venv/bin/hf download HaoyueTan/edkg-dl-models \
+RUN --mount=type=secret,id=hf_token \
+    HF_TOKEN="$(cat /run/secrets/hf_token)" \
+    HF_HUB_DISABLE_XET=1 \
+    .venv/bin/hf download HaoyueTan/edkg-dl-models \
     --local-dir "$EDKG_DL_ASSET_DIR"
 
 COPY edkg_dl ./edkg_dl
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-dev --extra api
+    uv sync --locked --no-dev --extra api --extra cpu
 
 
 ENV PATH="/app/.venv/bin:$PATH"

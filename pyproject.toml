@@ -36,6 +36,7 @@ dependencies = [
 
 [project.optional-dependencies]
 api = ["fastapi[standard]>=0.115"]
+cpu = ["torch>=2.0.0"]
 plots = ["matplotlib>=3.8"]
 
 [project.scripts]
@@ -64,6 +65,14 @@ package = true
 name = "nju-mirror"
 url = "https://mirror.nju.edu.cn/pypi/web/simple"
 default = true
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://mirror.nju.edu.cn/pytorch/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "extra == 'cpu'" }]
 
 [tool.ruff]
 target-version = "py310"

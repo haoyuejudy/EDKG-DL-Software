@@ -33,6 +33,17 @@ pip install "edkg-dl[api,plots]"
 
 The same extras work with `uv add`, `uv pip install`, and `uv tool install`.
 
+## Torch variants (CPU / CUDA)
+
+The `torch` wheels on PyPI already vary by OS: macOS and Windows wheels are CPU-only, while Linux wheels bundle the CUDA runtime — for most users `pip install edkg-dl` just works.
+
+To pick a specific torch variant or version on Linux/Windows, install torch first, then `edkg-dl` (the installed torch is reused as long as it satisfies `>=2.0.0`):
+
+```bash
+pip install torch --index-url https://mirror.nju.edu.cn/pytorch/whl/cu130   # pass e.g. torch==2.13.0+cu130 for an exact version
+pip install edkg-dl
+```
+
 ## Runtime dependency: Java for PaDEL
 
 Descriptor calculation uses PaDEL, which requires Java 8+. When no `java` is found on PATH, a Temurin 17 JRE matching the OS and architecture is downloaded automatically into the user cache directory — no manual setup needed.
