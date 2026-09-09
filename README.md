@@ -1,6 +1,6 @@
 # EDKG-DL
 
-English | [简体中文](README_zh.md)
+English | [简体中文](https://github.com/haoyuejudy/EDKG-DL/blob/main/README_zh.md)
 
 **D**eep **L**earning framework with causality-integrated **E**ndocrine **D**isruption **K**nowledge **G**raph. Predicts endocrine-disrupting effects (EDC), applicability domain (AD), and sensitive event pathways from compound SMILES using machine learning and an AOP network.
 
@@ -16,7 +16,7 @@ pip install edkg-dl
 uv add edkg-dl
 ```
 
-Optional extras: `pip install "edkg-dl[api]"` (HTTP service) and `pip install "edkg-dl[plots]"` (applicability-domain plots). See [installation docs](docs/en/installation.md) for details, including the automatic Temurin JRE download for PaDEL.
+Optional extras: `pip install "edkg-dl[api]"` (HTTP service) and `pip install "edkg-dl[plots]"` (applicability-domain plots). See [installation docs](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/installation.md) for details, including the automatic Temurin JRE download for PaDEL.
 
 Model assets (~930 MB) are fetched automatically from [Hugging Face](https://huggingface.co/HaoyueTan/edkg-dl-models) on first use — no manual setup required.
 
@@ -43,10 +43,10 @@ result = predictor.predict("CCO")
 
 | Topic | Link |
 | --- | --- |
-| Installation | [docs/en/installation.md](docs/en/installation.md) |
-| Model assets | [docs/en/assets.md](docs/en/assets.md) |
-| CLI usage | [docs/en/cli.md](docs/en/cli.md) |
-| Python API | [docs/en/python-api.md](docs/en/python-api.md) |
-| HTTP API | [docs/en/http-api.md](docs/en/http-api.md) |
-| Output formats | [docs/en/output.md](docs/en/output.md) |
-| Development | [docs/en/development.md](docs/en/development.md) |
+| Installation | [installation.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/installation.md) |
+| Model assets | [assets.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/assets.md) |
+| CLI usage | [cli.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/cli.md) |
+| Python API | [python-api.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/python-api.md) |
+| HTTP API | [http-api.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/http-api.md) |
+| Output formats | [output.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/output.md) |
+| Development | [development.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/en/development.md) |
