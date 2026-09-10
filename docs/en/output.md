@@ -6,7 +6,7 @@ Predictions can be written as JSON, Excel, and optional applicability-domain plo
 
 The top level contains:
 
-- **Dual-model EDC classification** with the overall final verdict (1 when either the Original (graph) or Extended (tabular) model predicts EDC, 0 otherwise)
+- **EDC classification** with the overall final verdict
 - **Qualitative / quantitative applicability domains**
 - **Sensitive events** with causal-chain validation status
 - **Qualitative and quantitative predictions per event**
