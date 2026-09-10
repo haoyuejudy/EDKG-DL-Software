@@ -27,10 +27,10 @@ Set `HF_HUB_OFFLINE=1` to reuse an existing download without network access.
 models/
 ├── settings.json
 ├── manifest.json          # SHA-256 digests for integrity verification
-├── qualitative_models/    # per-event CSV + PKL
-├── quantitative_models/   # quantitative event CSV + PKL
-├── edc_models/            # 903-EDCs-2.csv + model_11.pkl
-├── gnn_models/            # model_state.pt
+├── qualitative_models/    # 74 biological entity-specific qualitative models
+├── quantitative_models/   # 52 biological entity-specific quantitative models
+├── edc_models/            # EDC classification
+├── gnn_models/            # GNN
 └── padel_runs_cache/      # descriptors.xml
 ```
 
