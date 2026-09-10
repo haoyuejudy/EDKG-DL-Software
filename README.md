@@ -2,9 +2,9 @@
 
 English | [简体中文](https://github.com/haoyuejudy/EDKG-DL/blob/main/README_zh.md)
 
-**D**eep **L**earning framework with causality-integrated **E**ndocrine **D**isruption **K**nowledge **G**raph. Predicts endocrine-disrupting effects (EDC), applicability domain (AD), and sensitive event pathways from compound SMILES using machine learning and an AOP network.
+**D**eep **L**earning framework with causality-integrated **E**ndocrine **D**isruption **K**nowledge **G**raph. Predicts endocrine-disrupting chemicals (EDCs), applicability domain (ADs), biological entities, and sensitive pathways from compound SMILES using machine learning and graph deep learning algorithmes.
 
-Pipeline: PaDEL 2D descriptors/fingerprints → qualitative/quantitative event-endpoint models → dual-track EDC classification (tabular model + graph neural network, GCN) → sensitive event and AOP pathway inference, producing JSON / Excel reports. Results are for research support only and must not replace experimental or regulatory conclusions.
+Pipeline: PaDEL 2D descriptors/fingerprints → biological entity-specific qualitative/quantitative models → causality-integrated EDC classification → sensitive adverse outcome (AO) and adverse outcome pathway (AOP) inference, producing JSON / Excel reports.
 
 ## Installation
 
