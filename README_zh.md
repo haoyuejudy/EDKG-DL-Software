@@ -1,6 +1,6 @@
 # EDKG-DL
 
-[English](https://github.com/haoyuejudy/EDKG-DL/blob/main/README.md) | 简体中文
+[English](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/README.md) | 简体中文
 
 融合因果关系的内分泌干扰知识图谱深度学习框架（**D**eep **L**earning framework with causality-integrated **E**ndocrine **D**isruption **K**nowledge **G**raph）。基于化合物 SMILES，结合机器学习/深度学习与AOP网络，预测内分泌干扰物（EDC）、应用域（AD）、敏感有害结局以及敏感通路。
 
@@ -16,7 +16,7 @@ pip install edkg-dl
 uv add edkg-dl
 ```
 
-可选 extras：`pip install "edkg-dl[api]"`（HTTP 服务）、`pip install "edkg-dl[plots]"`（适用域绘图）。详见[安装文档](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/installation.md)，包括 PaDEL 所需 Java 的自动下载说明。
+可选 extras：`pip install "edkg-dl[api]"`（HTTP 服务）、`pip install "edkg-dl[plots]"`（适用域绘图）。详见[安装文档](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/installation.md)，包括 PaDEL 所需 Java 的自动下载说明。
 
 模型资产（约 930 MB）首次使用时自动从 [Hugging Face](https://huggingface.co/HaoyueTan/edkg-dl-models) 获取——无需手动配置。
 
@@ -43,10 +43,10 @@ result = predictor.predict("CCO")
 
 | 主题 | 链接 |
 | --- | --- |
-| 安装 | [installation.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/installation.md) |
-| 模型资产 | [assets.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/assets.md) |
-| 命令行用法 | [cli.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/cli.md) |
-| Python API | [python-api.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/python-api.md) |
-| HTTP API | [http-api.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/http-api.md) |
-| 输出格式 | [output.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/output.md) |
-| 开发 | [development.md](https://github.com/haoyuejudy/EDKG-DL/blob/main/docs/zh/development.md) |
+| 安装 | [installation.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/installation.md) |
+| 模型资产 | [assets.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/assets.md) |
+| 命令行用法 | [cli.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/cli.md) |
+| Python API | [python-api.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/python-api.md) |
+| HTTP API | [http-api.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/http-api.md) |
+| 输出格式 | [output.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/output.md) |
+| 开发 | [development.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/zh/development.md) |

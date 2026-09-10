@@ -3,7 +3,7 @@
 ## 环境搭建
 
 ```bash
-git clone https://github.com/haoyuejudy/EDKG-DL.git
+git clone https://github.com/haoyuejudy/EDKG-DL-Software.git
 cd EDKG-DL
 uv sync --all-extras
 ```

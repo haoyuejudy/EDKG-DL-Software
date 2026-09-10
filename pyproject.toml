@@ -45,7 +45,7 @@ edkg-dl-api = "edkg_dl.http_api:run"
 
 [project.urls]
 Homepage = "https://edkgdl.com/"
-Repository = "https://github.com/haoyuejudy/EDKG-DL"
+Repository = "https://github.com/haoyuejudy/EDKG-DL-Software"
 
 [build-system]
 requires = ["setuptools>=77"]
