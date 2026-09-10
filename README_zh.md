@@ -2,9 +2,9 @@
 
 [English](https://github.com/haoyuejudy/EDKG-DL/blob/main/README.md) | 简体中文
 
-融合因果关系的内分泌干扰知识图谱深度学习框架（**D**eep **L**earning framework with causality-integrated **E**ndocrine **D**isruption **K**nowledge **G**raph）。基于化合物 SMILES，结合机器学习与 AOP 网络，预测内分泌干扰效应（EDC）、适用域（AD）以及敏感事件通路。
+融合因果关系的内分泌干扰知识图谱深度学习框架（**D**eep **L**earning framework with causality-integrated **E**ndocrine **D**isruption **K**nowledge **G**raph）。基于化合物 SMILES，结合机器学习/深度学习与AOP网络，预测内分泌干扰物（EDC）、应用域（AD）、敏感有害结局以及敏感通路。
 
-流程：PaDEL 2D 描述符/分子指纹 → 定性/定量事件-终点模型 → 双轨 EDC 分类（表格模型 + 图神经网络 GCN）→ 敏感事件与 AOP 通路推断，输出 JSON / Excel 报告。结果仅用于科研辅助，不能替代实验或监管结论。
+流程：PaDEL 2D 描述符/分子指纹 → 定性/定量事件-终点模型 → EDC预测模型 → 敏感事件与 AOP 通路推断，输出 JSON / Excel 报告。结果仅用于科研辅助，不能替代实验或监管结论。
 
 ## 安装
 
