@@ -84,9 +84,10 @@ class PredictionPipeline:
             EdkgDlError: Raised when configuration or required artifacts are invalid.
         """
         paths.validate_runtime_assets()
-        model_version = paths.verify_manifest()
+        paths.verify_manifest()
         settings = Settings.load(paths.settings)
         paths.validate_endpoint_assets(settings)
+        from . import __version__
         from .predictors.gcn import GCNPredictor
 
         return cls(
@@ -94,7 +95,7 @@ class PredictionPipeline:
             feature_extractor=PadelFeatureExtractor(paths.padel_descriptors),
             model_registry=ModelRegistry(paths),
             graph_predictor=GCNPredictor(settings, paths.gcn_model),
-            model_version=model_version,
+            model_version=__version__,
             max_paths=max_paths,
             max_path_length=max_path_length,
             causal_chain_policy=causal_chain_policy,
