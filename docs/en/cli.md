@@ -26,11 +26,13 @@ Options:
 
 ## Batch prediction
 
-Reads SMILES from a text file — one per line; blank lines and `#` comments are ignored — and writes a single JSON with per-item outcomes and `total` / `succeeded` / `failed` counts. Failed items do not abort the batch.
+Reads SMILES from a text file — one per line; blank lines and `#` comments are ignored — and always writes a summary JSON (`batch_prediction.json`) with per-item outcomes and `total` / `succeeded` / `failed` counts. With `--output`, `--format` additionally writes one report per succeeded SMILES. Failed items do not abort the batch.
 
 ```bash
 edkg-dl-predict batch molecules.txt --asset-dir ./models
-edkg-dl-predict batch molecules.txt -o runs/batch --max-workers 4   # 1-8 workers
+edkg-dl-predict batch molecules.txt -o runs/batch --max-workers 4        # 1-8 workers
+edkg-dl-predict batch molecules.txt -o runs/batch --format both          # one JSON + one Excel per SMILES
+edkg-dl-predict batch molecules.txt -o runs/batch --format xlsx --overwrite
 ```
 
 Input file example (`molecules.txt`, UTF-8):
@@ -45,9 +47,9 @@ c1ccccc1
 Batch-specific behavior:
 
 - `--max-workers`: concurrent prediction workers, 1–8, default 1
-- Results keep the input order; the top level contains `total` / `succeeded` / `failed` and per-item `items`
-- A failed item gets `ok: false` with an `error` (`code` + `message`); other items continue
-- Batch mode writes JSON only (`batch_prediction.json`), no Excel
+- `--format {json,xlsx,both}`: with `--output`, writes one `prediction_<index>.json` and/or `prediction_<index>.xlsx` per **succeeded** SMILES (default `json`); the index is the zero-based input line number, zero-padded to 4 digits (e.g. `prediction_0000`)
+- Failed items produce no per-molecule report; they get `ok: false` with an `error` (`code` + `message`) recorded in `batch_prediction.json`, and other items continue
+- `batch_prediction.json` is always written regardless of `--format`; existing target files are only replaced with `--overwrite`
 - No valid SMILES in the file, a missing file, or an encoding error exits with code 2
 
 ## Asset download

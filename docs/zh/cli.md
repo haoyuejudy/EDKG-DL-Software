@@ -26,11 +26,13 @@ edkg-dl-predict "CCO" --output runs/example --ad-plots   # 资产按解析顺序
 
 ## 批量预测
 
-从**文本文件**读取输入：每行一个 SMILES，空行和以 `#` 开头的注释行会被忽略；输出单个 JSON，包含逐条结果与 `total` / `succeeded` / `failed` 统计。单条失败不影响其他条目。
+从**文本文件**读取输入：每行一个 SMILES，空行和以 `#` 开头的注释行会被忽略；始终输出汇总 JSON（`batch_prediction.json`，包含逐条结果与 `total` / `succeeded` / `failed` 统计），并可按 `--format` 为每条成功的 SMILES 追加单分子报告。单条失败不影响其他条目。
 
 ```bash
 edkg-dl-predict batch molecules.txt --asset-dir ./models
-edkg-dl-predict batch molecules.txt -o runs/batch --max-workers 4   # 1-8 线程
+edkg-dl-predict batch molecules.txt -o runs/batch --max-workers 4        # 1-8 线程
+edkg-dl-predict batch molecules.txt -o runs/batch --format both          # 每条 SMILES 一个 JSON + 一个 Excel
+edkg-dl-predict batch molecules.txt -o runs/batch --format xlsx --overwrite
 ```
 
 输入文件示例（`molecules.txt`，UTF-8 编码）：
@@ -45,9 +47,9 @@ c1ccccc1
 批量专属行为：
 
 - `--max-workers`：并发预测线程数，取值 1–8，默认 1
-- 结果按输入顺序排列，顶层包含 `total` / `succeeded` / `failed` 统计与逐条结果 `items`
-- 失败条目的 `ok` 为 `false`，并附带 `error`（含 `code` 与 `message`），其余条目继续
-- 批量模式仅输出 JSON（`batch_prediction.json`），不生成 Excel
+- `--format {json,xlsx,both}`：配合 `--output` 时，为每条**成功**的 SMILES 输出一个 `prediction_序号.json` 和/或 `prediction_序号.xlsx`（默认 `json`）；序号为 4 位输入行号（如 `prediction_0000`）
+- 失败条目不生成单分子报告，其 `ok` 为 `false` 并附带 `error`（含 `code` 与 `message`），记录在 `batch_prediction.json` 中，其余条目继续
+- 汇总文件 `batch_prediction.json` 始终输出，不受 `--format` 影响；所有目标文件已存在时需 `--overwrite` 才会替换
 - 文件中无有效 SMILES、文件不存在或编码错误时，命令报错并以退出码 2 结束
 
 ## 资产下载

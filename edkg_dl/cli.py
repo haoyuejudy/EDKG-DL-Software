@@ -145,6 +145,12 @@ def build_batch_parser() -> argparse.ArgumentParser:
         help="input text file with one SMILES per line (blank lines and # comments ignored)",
     )
     parser.add_argument(
+        "--format",
+        choices=("json", "xlsx", "both"),
+        default="json",
+        help="per-molecule report format when --output is provided (default: json)",
+    )
+    parser.add_argument(
         "--max-workers",
         type=int,
         default=1,
@@ -212,10 +218,35 @@ def run_batch(argv: list[str]) -> int:
         if output_dir.exists() and not output_dir.is_dir():
             raise NotADirectoryError(f"Output is not a directory: {output_dir}")
         output_dir.mkdir(parents=True, exist_ok=True)
-        report_path = output_dir / "batch_prediction.json"
-        if report_path.exists() and not arguments.overwrite:
-            raise OutputExistsError(f"Output already exists: {report_path}")
-        report_path.write_text(payload + "\n", encoding="utf-8")
+        succeeded = [item for item in batch.items if item.result is not None]
+        report_paths = [output_dir / "batch_prediction.json"]
+        if arguments.format in {"json", "both"}:
+            report_paths.extend(
+                output_dir / f"prediction_{item.index:04d}.json" for item in succeeded
+            )
+        if arguments.format in {"xlsx", "both"}:
+            report_paths.extend(
+                output_dir / f"prediction_{item.index:04d}.xlsx" for item in succeeded
+            )
+        existing = [path for path in report_paths if path.exists()]
+        if existing and not arguments.overwrite:
+            raise OutputExistsError(
+                "Output already exists: " + ", ".join(str(path) for path in existing)
+            )
+        report_paths[0].write_text(payload + "\n", encoding="utf-8")
+        for item in succeeded:
+            if arguments.format in {"json", "both"}:
+                write_json_report(
+                    item.result,
+                    output_dir / f"prediction_{item.index:04d}.json",
+                    overwrite=arguments.overwrite,
+                )
+            if arguments.format in {"xlsx", "both"}:
+                write_excel_report(
+                    item.result,
+                    output_dir / f"prediction_{item.index:04d}.xlsx",
+                    overwrite=arguments.overwrite,
+                )
         print(output_dir)
         return 0
     except (EdkgDlError, OSError, RuntimeError, ValueError) as exc:

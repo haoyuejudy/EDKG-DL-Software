@@ -133,6 +133,64 @@ class TestMainErrorPaths:
         assert "error:" in capsys.readouterr().err
 
 
+class TestBatchReports:
+    """Per-molecule report export for the batch command."""
+
+    @staticmethod
+    def _install_stub_predictor(monkeypatch: Any, make_result: Any) -> None:
+        """Replace the CLI predictor with one failing on the SMILES ``BAD``."""
+        from edkg_dl.api import BatchPredictionItem, BatchPredictionResult
+
+        class StubPredictor:
+            @classmethod
+            def from_assets(cls, *_args: Any, **_kwargs: Any) -> StubPredictor:
+                return cls()
+
+            def predict_batch(self, smiles_values: list[str], **_kwargs: Any) -> Any:
+                items = tuple(
+                    BatchPredictionItem(index=index, smiles=smiles, result=make_result(smiles))
+                    if smiles != "BAD"
+                    else BatchPredictionItem(
+                        index=index, smiles=smiles, error_code="InvalidSmilesError", error_message="bad"
+                    )
+                    for index, smiles in enumerate(smiles_values)
+                )
+                return BatchPredictionResult(items)
+
+        monkeypatch.setattr(cli, "Predictor", StubPredictor)
+
+    def test_batch_writes_per_molecule_reports(
+        self, tmp_path: Path, monkeypatch: Any, make_result: Any
+    ) -> None:
+        """--format both writes one JSON and one Excel per succeeded item."""
+        self._install_stub_predictor(monkeypatch, make_result)
+        source = tmp_path / "input.txt"
+        source.write_text("CCO\nBAD\nCCN\n", encoding="utf-8")
+        out = tmp_path / "batch_out"
+        code = cli.main(["batch", str(source), "--format", "both", "--output", str(out)])
+        assert code == 0
+        assert (out / "batch_prediction.json").is_file()
+        assert (out / "prediction_0000.json").is_file()
+        assert (out / "prediction_0000.xlsx").read_bytes()[:2] == b"PK"
+        assert (out / "prediction_0002.json").is_file()
+        assert (out / "prediction_0002.xlsx").is_file()
+        assert not (out / "prediction_0001.json").exists()
+        assert not (out / "prediction_0001.xlsx").exists()
+
+    def test_batch_resists_rerun_without_overwrite(
+        self, tmp_path: Path, monkeypatch: Any, make_result: Any, capsys: Any
+    ) -> None:
+        """Existing per-molecule reports block a rerun unless --overwrite is given."""
+        self._install_stub_predictor(monkeypatch, make_result)
+        source = tmp_path / "input.txt"
+        source.write_text("CCO\n", encoding="utf-8")
+        argv = ["batch", str(source), "--format", "json", "--output", str(tmp_path / "out")]
+        assert cli.main(argv) == 0
+        assert cli.main(argv) == 2
+        assert "Output already exists" in capsys.readouterr().err
+        assert cli.main([*argv, "--overwrite"]) == 0
+
+
 def test_module_entry_point_help() -> None:
     """``python -m edkg_dl --help`` exits successfully."""
     completed = subprocess.run(
