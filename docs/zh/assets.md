@@ -27,10 +27,10 @@ edkg-dl-predict download --asset-dir ./models
 models/
 ├── settings.json
 ├── manifest.json          # 用于完整性校验的 SHA-256 摘要
-├── qualitative_models/    # 各事件 CSV + PKL
-├── quantitative_models/   # 定量事件 CSV + PKL
-├── edc_models/            # 903-EDCs-2.csv + model_11.pkl
-├── gnn_models/            # model_state.pt
+├── qualitative_models/    # 74 个生物实体特异的定性模型
+├── quantitative_models/   # 52 个生物实体特异的定量模型
+├── edc_models/            # EDC 分类
+├── gnn_models/            # GNN
 └── padel_runs_cache/      # descriptors.xml
 ```
 
