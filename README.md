@@ -50,3 +50,7 @@ result = predictor.predict("CCO")
 | HTTP API | [http-api.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/en/http-api.md) |
 | Output formats | [output.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/en/output.md) |
 | Development | [development.md](https://github.com/haoyuejudy/EDKG-DL-Software/blob/main/docs/en/development.md) |
+
+## Disclaimer
+
+Results are for research support only and must not replace experimental or regulatory conclusions.
