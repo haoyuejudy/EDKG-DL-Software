@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from platformdirs import user_cache_dir
@@ -11,7 +12,8 @@ from .exceptions import AssetDownloadError
 
 DEFAULT_REPO_ID = "HaoyueTan/edkg-dl-models"
 REPO_TYPE = "model"
-REVISION = "04a4c0a165b1606ea0bf07a50ed70e572ad333d0"
+REVISION = "f415bd42214867d2543a068e38ad6d0fa2c92d8c"
+REVISION_MARKER = ".revision"
 
 
 def default_cache_dir() -> Path:
@@ -24,6 +26,29 @@ def default_cache_dir() -> Path:
     return Path(user_cache_dir("edkg-dl")) / "models"
 
 
+def cached_revision(asset_root: str | Path | None = None) -> str | None:
+    """Return the revision recorded in ``asset_root``, or ``None`` when absent.
+
+    Args:
+        asset_root: Directory previously populated by ``download_assets``;
+            defaults to the per-user cache dir.
+
+    Returns:
+        Recorded revision string without surrounding whitespace, or
+        ``None`` when the marker file is missing or unreadable.
+    """
+    target = default_cache_dir() if asset_root is None else Path(asset_root).expanduser()
+    try:
+        return (target / REVISION_MARKER).read_text(encoding="utf-8").strip()
+    except OSError:
+        return None
+
+
+def _offline_mode() -> bool:
+    """Report whether ``HF_HUB_OFFLINE`` disables network synchronization."""
+    return os.environ.get("HF_HUB_OFFLINE", "").strip().upper() in {"1", "ON", "YES", "TRUE"}
+
+
 def download_assets(
     asset_root: str | Path | None = None,
     *,
@@ -34,7 +59,8 @@ def download_assets(
     The transfer is resumable and integrity-checked by ``huggingface_hub``;
     files that already match the remote revision are skipped. Set
     ``HF_HUB_OFFLINE=1`` to reuse a previously downloaded snapshot without
-    network access.
+    network access (in that case the local revision marker is left untouched
+    so a later online run still re-synchronizes outdated files).
 
     Args:
         asset_root: Target directory; defaults to the per-user cache dir.
@@ -60,4 +86,7 @@ def download_assets(
         raise AssetDownloadError(
             f"Failed to download model assets from {repo_id!r}: {exc}"
         ) from exc
-    return Path(downloaded).resolve()
+    root = Path(downloaded).resolve()
+    if not _offline_mode():
+        (root / REVISION_MARKER).write_text(f"{REVISION}\n", encoding="utf-8")
+    return root

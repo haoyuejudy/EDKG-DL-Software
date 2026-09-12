@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -22,6 +23,41 @@ def test_download_assets_offline_failure(tmp_path: Path, monkeypatch: pytest.Mon
     monkeypatch.setenv("HF_HUB_OFFLINE", "1")
     with pytest.raises(AssetDownloadError, match="Failed to download"):
         hub.download_assets(tmp_path, repo_id="edkg-dl-tests/nonexistent")
+
+
+def _stub_snapshot_download(**kwargs: Any) -> str:
+    """Pretend the Hub transferred one settings file into ``local_dir``."""
+    local_dir = Path(kwargs["local_dir"])
+    local_dir.mkdir(parents=True, exist_ok=True)
+    (local_dir / "settings.json").write_text("{}", encoding="utf-8")
+    return str(local_dir)
+
+
+class TestRevisionMarker:
+    """Revision marker recording and cache freshness inspection."""
+
+    def test_cached_revision_without_marker(self, tmp_path: Path) -> None:
+        """An asset directory without a marker reports ``None``."""
+        assert hub.cached_revision(tmp_path) is None
+
+    def test_download_assets_records_revision(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A successful online download writes the pinned revision marker."""
+        monkeypatch.delenv("HF_HUB_OFFLINE", raising=False)
+        monkeypatch.setattr("huggingface_hub.snapshot_download", _stub_snapshot_download)
+        hub.download_assets(tmp_path)
+        assert hub.cached_revision(tmp_path) == hub.REVISION
+
+    def test_offline_reuse_keeps_marker_untouched(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Offline reuse of a stale snapshot does not claim the new revision."""
+        monkeypatch.setenv("HF_HUB_OFFLINE", "1")
+        monkeypatch.setattr("huggingface_hub.snapshot_download", _stub_snapshot_download)
+        (tmp_path / hub.REVISION_MARKER).write_text("old-revision\n", encoding="utf-8")
+        hub.download_assets(tmp_path)
+        assert hub.cached_revision(tmp_path) == "old-revision"
 
 
 class TestAdoptiumPlatform:

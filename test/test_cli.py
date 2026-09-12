@@ -9,14 +9,15 @@ from typing import Any
 
 import pytest
 
-from edkg_dl import cli
+from edkg_dl import cli, hub
 
 
 def _empty_asset_root(tmp_path: Path) -> Path:
-    """Create an asset root holding only a settings file."""
+    """Create an asset root marked as cached at the current revision."""
     asset_dir = tmp_path / "assets"
     asset_dir.mkdir()
     (asset_dir / "settings.json").write_text("{}", encoding="utf-8")
+    (asset_dir / hub.REVISION_MARKER).write_text(f"{hub.REVISION}\n", encoding="utf-8")
     return asset_dir
 
 
@@ -151,7 +152,10 @@ class TestBatchReports:
                     BatchPredictionItem(index=index, smiles=smiles, result=make_result(smiles))
                     if smiles != "BAD"
                     else BatchPredictionItem(
-                        index=index, smiles=smiles, error_code="InvalidSmilesError", error_message="bad"
+                        index=index,
+                        smiles=smiles,
+                        error_code="InvalidSmilesError",
+                        error_message="bad",
                     )
                     for index, smiles in enumerate(smiles_values)
                 )

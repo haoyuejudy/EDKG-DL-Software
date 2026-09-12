@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from conftest import StubPipeline
 
-from edkg_dl import BatchPredictionItem, BatchPredictionResult, Predictor
-from edkg_dl.exceptions import InvalidSmilesError
+from edkg_dl import BatchPredictionItem, BatchPredictionResult, Predictor, api, hub
+from edkg_dl.exceptions import EdkgDlError, InvalidSmilesError
 from edkg_dl.schemas import PredictionResult
 
 
@@ -114,3 +116,39 @@ class TestPredictorDelegation:
         """predict_many keeps input order."""
         results = Predictor(pipeline=stub_pipeline).predict_many(["X", "Y"])
         assert [result.smiles for result in results] == ["X", "Y"]
+
+
+class TestFromAssetsRevisionGuard:
+    """Automatic re-download when the cached revision no longer matches."""
+
+    def _prepare(self, tmp_path: Path, revision: str | None) -> Path:
+        """Create an asset root with a settings file and optional marker."""
+        (tmp_path / "settings.json").write_text("{}", encoding="utf-8")
+        if revision is not None:
+            (tmp_path / hub.REVISION_MARKER).write_text(f"{revision}\n", encoding="utf-8")
+        return tmp_path
+
+    def test_matching_revision_skips_download(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A cache recorded at the pinned revision never triggers a download."""
+        asset_dir = self._prepare(tmp_path, hub.REVISION)
+
+        def _forbidden(*_args: object, **_kwargs: object) -> Path:
+            raise AssertionError("download_assets must not be called")
+
+        monkeypatch.setattr(api, "download_assets", _forbidden)
+        with pytest.raises(EdkgDlError, match="Missing runtime assets"):
+            Predictor.from_assets(asset_dir)
+
+    @pytest.mark.parametrize("revision", [None, "outdated-revision"])
+    def test_stale_revision_triggers_download(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, revision: str | None
+    ) -> None:
+        """A missing or outdated marker re-downloads before loading assets."""
+        asset_dir = self._prepare(tmp_path, revision)
+        calls: list[Path] = []
+        monkeypatch.setattr(api, "download_assets", lambda root: calls.append(Path(root)) or root)
+        with pytest.raises(EdkgDlError, match="Missing runtime assets"):
+            Predictor.from_assets(asset_dir)
+        assert calls == [asset_dir]

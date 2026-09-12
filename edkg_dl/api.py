@@ -11,7 +11,7 @@ from typing import Any
 from .config import ProjectPaths
 from .domain import CausalChainPolicy
 from .exceptions import EdkgDlError
-from .hub import download_assets
+from .hub import REVISION, cached_revision, download_assets
 from .pipeline import PredictionPipeline
 from .schemas import PredictionResult
 
@@ -90,9 +90,10 @@ class Predictor:
     ) -> Predictor:
         """Create a reusable predictor from an external asset directory.
 
-        When the resolved asset directory does not contain ``settings.json``,
-        the assets are downloaded automatically from the Hugging Face Hub
-        into that directory (the per-user cache directory by default).
+        When the resolved asset directory does not contain ``settings.json``
+        or was populated for a different model revision, the assets are
+        (re-)downloaded automatically from the Hugging Face Hub into that
+        directory (the per-user cache directory by default).
 
         Args:
             asset_dir: Directory containing settings and model artifacts.
@@ -109,7 +110,7 @@ class Predictor:
                 or when a required automatic download fails.
         """
         paths = ProjectPaths.resolve(asset_dir)
-        if not paths.settings.is_file():
+        if not paths.settings.is_file() or cached_revision(paths.asset_root) != REVISION:
             paths = ProjectPaths.resolve(download_assets(paths.asset_root))
         pipeline = PredictionPipeline.from_paths(
             paths,
